@@ -6,3 +6,13 @@
   justify-content: center;
   align-items: center;
 }
+
+#account-form {
+  display: flex;
+  flex-direction: column;
+}
+
+#account-form input {
+  padding: 5px;
+  margin: 5px;
+}
