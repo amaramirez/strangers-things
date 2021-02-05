@@ -4,68 +4,85 @@ import {
   BrowserRouter as Router,
   Route,
   Link,
-  Switch
+  Switch,
+  useLocation,
+  useHistory
 } from 'react-router-dom';
 
-const AccountForm = ({registerForm = false}) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [passmatch, setPassmatch] = useState('');
-  const pageText = registerForm ? 'Register' : 'Log In';
+import {
+  AccountForm,
+  WelcomePage,
+  UserPage,
+  NavBar
+} from './components';
 
-  return (
-    <>
-    <h2>{pageText}</h2>
-    <form id="account-form" onSubmit={(event) => {
-      event.preventDefault();
-      console.log("User: ", username, "\nPassword: ",password);
-    }}>
-      <input type="text" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Enter Username" required={true} minLength="8"></input>
-      <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter Password" required={true} minLength="8"></input>
+import {
+  getCurrentUser,
+  getCurrentToken
+} from './auth';
 
-      {
-        registerForm ?
-        (<input type="password" value={passmatch} onChange={(event) => setPassmatch(event.target.value)} placeholder="Enter Password Again" required={true}></input>) :
-        null
-      }
-      <button type="submit" disabled={!username ||
-                                      !password ||
-                                      (password !== passmatch && registerForm)}>{pageText}</button>
-      <span id="account-error">{(passmatch !== password && registerForm) ? "Passwords must match." : null}</span>
-      <Link to={registerForm ? '/login' : '/register'}>{registerForm ? (
-        "Already have an account? Click to Log In."
-      ) : (
-        "Need an account? Click to Register."
-      )}</Link>
-    </form>
-    </>
-  )
-}
+import {
+  logIn,
+  logOut
+} from './api';
 
 const App = () => {
+  const [token, setToken] = useState(getCurrentToken());
+  const [user, setUser] = useState(getCurrentUser());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const currentPath = useLocation().pathname;
+  const history = useHistory();
+  const username = user ? user.username : "Guest";
+
+  console.log(user);
+
+  useEffect (async () => {
+    if (token && !user) {
+      try {
+        const user = await logIn(token);
+        setUser(user);
+        setIsLoggedIn(true);
+        history.push('/profile');
+      } catch (err) {
+        console.error(err);
+      }
+
+    } else if (!token && user){
+      logOut();
+      setUser(null);
+      setIsLoggedIn(false);
+    }
+  },[token]);
 
   return (
     <>
-      <h1>Stranger's Things</h1>
-      <nav>
-        {
-          isLoggedIn ? (
-            <Link to="/logout">Log Out</Link>
-          ) : (
-            document.location.pathname === ('/login' || '/register') ? (
-              <Link to="/login">Register/Log In</Link>
-            ) : null
-          )
-        }
+      <header>
+        <h1>Stranger's Things</h1>
+        <h2>Hello, {username}! {isLoggedIn ? (
+          <Link id="logOutButton" onClick={() => {
+            setToken(null);
+          }
+          } to="/">Log Out</Link>
+        ) : null}
+        </h2>
 
-      </nav>
-      <Route path="/login">
-        <AccountForm/>
-      </Route>
-      <Route path="/register">
-        <AccountForm registerForm={true} />
-      </Route>
+        <NavBar isLoggedIn={isLoggedIn} />
+
+      </header>
+
+      <main>
+        <Switch>
+          <Route path="/posts">
+            <h1>Posts!</h1>
+          </Route>
+          {
+            !isLoggedIn ? <WelcomePage setToken={setToken} /> : <UserPage user={user} setToken={setToken}/>
+          }
+
+        </Switch>
+      </main>
+
+      <h3>{currentPath}</h3>
     </>
   )
 }
