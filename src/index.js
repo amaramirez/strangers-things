@@ -11,9 +11,9 @@ import {
 
 import {
   AccountForm,
-  WelcomePage,
-  UserPage,
-  NavBar
+  NavBar,
+  HomePage,
+  PostsPage
 } from './components';
 
 import {
@@ -23,13 +23,14 @@ import {
 
 import {
   logIn,
-  logOut
+  logOut,
+  fetchPosts
 } from './api';
 
 const App = () => {
   const [token, setToken] = useState(getCurrentToken());
   const [user, setUser] = useState(getCurrentUser());
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = user ? true : false;
   const currentPath = useLocation().pathname;
   const history = useHistory();
   const username = user ? user.username : "Guest";
@@ -41,7 +42,7 @@ const App = () => {
       try {
         const user = await logIn(token);
         setUser(user);
-        setIsLoggedIn(true);
+        //setIsLoggedIn(true);
         history.push('/profile');
       } catch (err) {
         console.error(err);
@@ -50,7 +51,7 @@ const App = () => {
     } else if (!token && user){
       logOut();
       setUser(null);
-      setIsLoggedIn(false);
+      //setIsLoggedIn(false);
     }
   },[token]);
 
@@ -62,22 +63,29 @@ const App = () => {
           <Link id="logOutButton" onClick={() => {
             setToken(null);
           }
-          } to="/">Log Out</Link>
+        } to={currentPath}>Log Out</Link>
         ) : null}
         </h2>
 
-        <NavBar isLoggedIn={isLoggedIn} />
+        <NavBar />
 
       </header>
 
       <main>
         <Switch>
           <Route path="/posts">
-            <h1>Posts!</h1>
+            <PostsPage isLoggedIn={isLoggedIn} />
           </Route>
-          {
-            !isLoggedIn ? <WelcomePage setToken={setToken} /> : <UserPage user={user} setToken={setToken}/>
-          }
+
+          <Route path="/profile">
+            {
+              isLoggedIn ? <h1>Messages!</h1> : <AccountForm setToken={setToken} />
+            }
+          </Route>
+
+          <Route path="/">
+            <HomePage isLoggedIn={isLoggedIn} />
+          </Route>
 
         </Switch>
       </main>

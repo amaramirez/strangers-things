@@ -8,7 +8,8 @@ import {
 } from 'react-router-dom';
 import {tryAccess} from '../api'
 
-const AccountForm = ({setToken, registerForm = false}) => {
+const AccountForm = ({setToken}) => {
+  const [registerForm, setRegisterFrom] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passmatch, setPassmatch] = useState('');
@@ -45,18 +46,19 @@ const AccountForm = ({setToken, registerForm = false}) => {
       <section id="account-error">
       {
         (passmatch !== password && registerForm) ? (
-          <span>Passwords must match.</span>
+          <p>Passwords must match.</p>
         ) : null
       }
       {
         accessErr ? (
-          <span>{accessErr}</span>
+          <p>{accessErr}</p>
         ) : null
       }
       </section>
       <Link onClick={() => {
         setAccessErr('');
-      }} to={registerForm ? '/login' : '/register'}>{registerForm ? (
+        setRegisterFrom(!registerForm);
+      }} to="#">{registerForm ? (
         "Already have an account? Click to Log In."
       ) : (
         "Need an account? Click to Register."

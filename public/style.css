@@ -28,3 +28,12 @@ main {
 #nav-link {
   padding: 10px;
 }
+
+#posts-container {
+  width: 65%;
+  margin: auto;
+}
+
+.listed-post {
+  text-align: left;
+}

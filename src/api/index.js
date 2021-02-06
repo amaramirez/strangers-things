@@ -9,7 +9,6 @@ const BASE_URL = 'https://strangers-things.herokuapp.com/api/2010-CPU-RM-WEB-PT'
 
 const tryAccess = async (userName,userPass,doRegister = false) => {
   const access_url = `${BASE_URL}/users/${doRegister ? 'register' : 'login'}`;
-//  const access_url = BASE_URL + '/users/' + (doRegister ? 'register' : 'login');
 
   try {
     const rsp = await fetch(access_url, {
@@ -35,8 +34,9 @@ const tryAccess = async (userName,userPass,doRegister = false) => {
 }
 
 const logIn = async (token) => {
+  const test_url = `${BASE_URL}/users/me`;
+
   try {
-    const test_url = `${BASE_URL}/users/me`;
     const rsp = await fetch(test_url, {
       headers: {
         'Content-Type': 'application/json',
@@ -63,4 +63,22 @@ const logOut = () => {
   clearCurrentUser();
 }
 
-export {tryAccess,logIn,logOut};
+const fetchPosts = async () => {
+  const post_url = `${BASE_URL}/posts`;
+
+  try {
+    const rsp = await fetch(post_url);
+    const data = await rsp.json();
+
+    if (data.success) {
+      return data.data;
+    }
+
+    return null;
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export {tryAccess,logIn,logOut,fetchPosts};
