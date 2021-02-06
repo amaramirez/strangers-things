@@ -9,15 +9,17 @@ import {
 } from '../api'
 
 import {
-  SinglePost
+  SinglePost,
+  AddPostForm
 } from './'
 
-const PostsPage = ({isLoggedIn}) => {
+const PostsPage = ({isLoggedIn,token}) => {
   const [posts, setPosts] = useState([])
+  const [newPost, setNewPost] = useState(false);
 
   useEffect(async () => {
     try {
-      const data = await fetchPosts();
+      const data = await fetchPosts(isLoggedIn, token);
 
       setPosts(data.posts);
 
@@ -28,7 +30,7 @@ const PostsPage = ({isLoggedIn}) => {
 
   return (
     <>
-      <h1>Posts!</h1>
+      <h1>Items for Sale</h1>
       <div id="posts-container">
         {
           posts.map((post) => {
@@ -39,6 +41,9 @@ const PostsPage = ({isLoggedIn}) => {
           })
         }
       </div>
+      {
+        isLoggedIn ? <AddPostForm setNewPost={setNewPost} newPost={newPost}/> : null
+      }
     </>
   )
 }

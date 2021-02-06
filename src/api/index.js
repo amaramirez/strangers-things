@@ -63,11 +63,14 @@ const logOut = () => {
   clearCurrentUser();
 }
 
-const fetchPosts = async () => {
+const fetchPosts = async (isLoggedIn = false, token = null) => {
   const post_url = `${BASE_URL}/posts`;
 
   try {
-    const rsp = await fetch(post_url);
+    const rsp = await (!isLoggedIn ? fetch(post_url) : (fetch(post_url, {
+      'Authorization': `Bearer ${token}`
+    })));
+
     const data = await rsp.json();
 
     if (data.success) {

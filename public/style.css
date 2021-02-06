@@ -37,3 +37,20 @@ main {
 .listed-post {
   text-align: left;
 }
+
+.add-post-form {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+.add-post-button {
+  position: fixed;
+  width: 5em;
+  height: 5em;
+  right: 15px;
+  bottom: 15px;
+}
+.post-form {
+  padding-bottom: 15px;
+  padding-top: 15px;
+}

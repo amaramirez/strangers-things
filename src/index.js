@@ -42,7 +42,6 @@ const App = () => {
       try {
         const user = await logIn(token);
         setUser(user);
-        //setIsLoggedIn(true);
         history.push('/profile');
       } catch (err) {
         console.error(err);
@@ -51,7 +50,6 @@ const App = () => {
     } else if (!token && user){
       logOut();
       setUser(null);
-      //setIsLoggedIn(false);
     }
   },[token]);
 
@@ -74,7 +72,7 @@ const App = () => {
       <main>
         <Switch>
           <Route path="/posts">
-            <PostsPage isLoggedIn={isLoggedIn} />
+            <PostsPage isLoggedIn={isLoggedIn} token={token} />
           </Route>
 
           <Route path="/profile">
@@ -89,8 +87,6 @@ const App = () => {
 
         </Switch>
       </main>
-
-      <h3>{currentPath}</h3>
     </>
   )
 }
