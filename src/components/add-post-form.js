@@ -1,6 +1,11 @@
 import {React,useState} from 'react';
 
-const AddPostForm = () => {
+import {
+  sendPost,
+  fetchPosts
+} from '../api';
+
+const AddPostForm = ({setPosts,token}) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
   const [postTitle, setPostTitle] = useState('');
   const [postPrice, setPostPrice] = useState('');
@@ -10,7 +15,7 @@ const AddPostForm = () => {
   return (
     <div style={{
       backgroundColor: (formIsOpen ? "#DCDCDC" : null)
-    }} className='add-post-form'>
+    }} className='add-post-container'>
     <button onClick={(event) => {
         event.preventDefault();
         setFormIsOpen(!formIsOpen);
@@ -21,18 +26,26 @@ const AddPostForm = () => {
       formIsOpen ? (
         <>
           <h2>Sell Item</h2>
-          <form className="post-form" onSubmit={() => {
+          <form className="post-form" onSubmit={async () => {
             event.preventDefault();
-            console.log('title: ', postTitle);
-            console.log('price: ', postPrice);
-            console.log('location: ', postLocation);
-            console.log('delivery: ', postWillDeliver);
-            console.log('description: ', postDescription);
-            setPostTitle('');
-            setPostPrice('');
-            setPostLocation('');
-            setPostWillDeliver(false);
-            setPostDescription('');
+
+            try {
+              const rsp = await sendPost(token,postTitle,postPrice,postLocation,postWillDeliver,postDescription);
+
+              if (rsp) {
+                const data = await fetchPosts(token);
+                setPosts(data.posts);
+              }
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setPostTitle('');
+              setPostPrice('');
+              setPostLocation('');
+              setPostWillDeliver(false);
+              setPostDescription('');
+              setFormIsOpen(false);
+            }
           }}>
 
             <label htmlFor="post-title">Name </label>

@@ -13,7 +13,8 @@ import {
   AccountForm,
   NavBar,
   HomePage,
-  PostsPage
+  PostsPage,
+  ProfilePage
 } from './components';
 
 import {
@@ -29,7 +30,7 @@ import {
 
 const App = () => {
   const [token, setToken] = useState(getCurrentToken());
-  const [user, setUser] = useState(getCurrentUser());
+  const [user, setUser] = useState(null);
   const isLoggedIn = user ? true : false;
   const currentPath = useLocation().pathname;
   const history = useHistory();
@@ -42,7 +43,6 @@ const App = () => {
       try {
         const user = await logIn(token);
         setUser(user);
-        history.push('/profile');
       } catch (err) {
         console.error(err);
       }
@@ -51,6 +51,7 @@ const App = () => {
       logOut();
       setUser(null);
     }
+    history.push(currentPath);
   },[token]);
 
   return (
@@ -77,7 +78,7 @@ const App = () => {
 
           <Route path="/profile">
             {
-              isLoggedIn ? <h1>Messages!</h1> : <AccountForm setToken={setToken} />
+              isLoggedIn ? <ProfilePage user={user} token={token}/> : <AccountForm setToken={setToken} />
             }
           </Route>
 

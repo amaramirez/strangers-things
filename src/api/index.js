@@ -63,12 +63,14 @@ const logOut = () => {
   clearCurrentUser();
 }
 
-const fetchPosts = async (isLoggedIn = false, token = null) => {
+const fetchPosts = async (token = null) => {
   const post_url = `${BASE_URL}/posts`;
 
   try {
-    const rsp = await (!isLoggedIn ? fetch(post_url) : (fetch(post_url, {
-      'Authorization': `Bearer ${token}`
+    const rsp = await (!token ? fetch(post_url) : (fetch(post_url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     })));
 
     const data = await rsp.json();
@@ -77,11 +79,63 @@ const fetchPosts = async (isLoggedIn = false, token = null) => {
       return data.data;
     }
 
-    return null;
+    return [];
 
   } catch (err) {
     console.error(err);
   }
 }
 
-export {tryAccess,logIn,logOut,fetchPosts};
+const sendPost = async (token,title,price,location,willDeliver,description) => {
+  const post_url = `${BASE_URL}/posts`;
+
+  const post_data = {
+    title: title,
+    price: price,
+    willDeliver: willDeliver,
+    description: description
+  }
+
+  if (location) post_data.location = location;
+
+  try {
+    const rsp = await fetch(post_url, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        post: post_data
+      })
+    })
+
+    const data = await rsp.json();
+
+    return data.success;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+const deletePost = async (postID, token) => {
+  const post_url = `${BASE_URL}/posts/${postID}`;
+
+  try {
+    const rsp = await fetch(post_url, {
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    const data = await rsp.json();
+
+    return data.success;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export {tryAccess,logIn,logOut,fetchPosts,sendPost,deletePost};

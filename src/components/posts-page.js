@@ -14,12 +14,13 @@ import {
 } from './'
 
 const PostsPage = ({isLoggedIn,token}) => {
-  const [posts, setPosts] = useState([])
-  const [newPost, setNewPost] = useState(false);
+  const [posts, setPosts] = useState([]);
+
+  console.log(posts);
 
   useEffect(async () => {
     try {
-      const data = await fetchPosts(isLoggedIn, token);
+      const data = await fetchPosts(token);
 
       setPosts(data.posts);
 
@@ -35,14 +36,15 @@ const PostsPage = ({isLoggedIn,token}) => {
         {
           posts.map((post) => {
             return (post.active ? (
-                <SinglePost key={post._id} post={post} />
+                <SinglePost key={post._id} post={post} setPosts={setPosts} token={token}/>
               ) : null
             )
           })
         }
+        <h3>That's all for now!</h3>
       </div>
       {
-        isLoggedIn ? <AddPostForm setNewPost={setNewPost} newPost={newPost}/> : null
+        isLoggedIn ? <AddPostForm setPosts={setPosts} token={token}/> : null
       }
     </>
   )
