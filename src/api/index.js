@@ -34,6 +34,22 @@ const tryAccess = async (userName,userPass,doRegister = false) => {
 }
 
 const logIn = async (token) => {
+  try {
+    const data = await getUser(token);
+
+    if (data.success) {
+      setCurrentToken(token);
+      setCurrentUser(data.data);
+
+      return data.data;
+    }
+    return null;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+const getUser = async (token) => {
   const test_url = `${BASE_URL}/users/me`;
 
   try {
@@ -46,13 +62,7 @@ const logIn = async (token) => {
 
     const data = await rsp.json();
 
-    if (data.success) {
-      setCurrentToken(token);
-      setCurrentUser(data.data);
-
-      return data.data;
-    }
-    return null;
+    return data;
   } catch (err) {
     console.error(err);
   }
@@ -138,4 +148,27 @@ const deletePost = async (postID, token) => {
   }
 }
 
-export {tryAccess,logIn,logOut,fetchPosts,sendPost,deletePost};
+const sendMessage = async (postID,_content, token) => {
+  try {
+    const rsp = await fetch(`${BASE_URL}/posts/${postID}/messages`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        message: {
+          content: _content
+        }
+      })
+    })
+
+    const data = await rsp.json();
+
+    return data.success;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export {tryAccess,logIn,logOut,fetchPosts,sendPost,deletePost,sendMessage,getUser};

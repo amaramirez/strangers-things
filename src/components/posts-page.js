@@ -13,21 +13,7 @@ import {
   AddPostForm
 } from './'
 
-const PostsPage = ({isLoggedIn,token}) => {
-  const [posts, setPosts] = useState([]);
-
-  console.log(posts);
-
-  useEffect(async () => {
-    try {
-      const data = await fetchPosts(token);
-
-      setPosts(data.posts);
-
-    } catch (err) {
-      console.error(err);
-    }
-  },[])
+const PostsPage = ({posts,setPosts,isLoggedIn,token,refreshUser}) => {
 
   return (
     <>
@@ -36,7 +22,7 @@ const PostsPage = ({isLoggedIn,token}) => {
         {
           posts.map((post) => {
             return (post.active ? (
-                <SinglePost key={post._id} post={post} setPosts={setPosts} token={token}/>
+                <SinglePost key={post._id} post={post} setPosts={setPosts} token={token} refreshUser={refreshUser}/>
               ) : null
             )
           })

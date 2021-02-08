@@ -19,24 +19,46 @@ import {
 
 import {
   getCurrentUser,
-  getCurrentToken
+  getCurrentToken,
+  setCurrentUser
 } from './auth';
 
 import {
   logIn,
   logOut,
-  fetchPosts
+  fetchPosts,
+  getUser
 } from './api';
 
 const App = () => {
   const [token, setToken] = useState(getCurrentToken());
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(getCurrentUser());
+  const [posts, setPosts] = useState([]);
   const isLoggedIn = user ? true : false;
   const currentPath = useLocation().pathname;
   const history = useHistory();
   const username = user ? user.username : "Guest";
 
-  console.log(user);
+  const refreshUser = async () => {
+    try {
+      const data = await getUser(token);
+      setUser(data.data);
+      setCurrentUser(data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const refreshPosts = async () => {
+    try {
+      const data = await fetchPosts(token);
+
+      setPosts(data.posts);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   useEffect (async () => {
     if (token && !user) {
@@ -53,6 +75,17 @@ const App = () => {
     }
     history.push(currentPath);
   },[token]);
+
+  useEffect(async () => {
+    try {
+      const postData = await refreshPosts();
+      const userData = await (isLoggedIn ? refreshUser() : null);
+    } catch(err) {
+      console.error(err);
+    }
+
+  },[])
+
 
   return (
     <>
@@ -73,12 +106,12 @@ const App = () => {
       <main>
         <Switch>
           <Route path="/posts">
-            <PostsPage isLoggedIn={isLoggedIn} token={token} />
+            <PostsPage posts={posts} setPosts={setPosts} isLoggedIn={isLoggedIn} token={token} />
           </Route>
 
           <Route path="/profile">
             {
-              isLoggedIn ? <ProfilePage user={user} token={token}/> : <AccountForm setToken={setToken} />
+              isLoggedIn ? <ProfilePage posts={posts} user={user} token={token} /> : <AccountForm setToken={setToken} />
             }
           </Route>
 

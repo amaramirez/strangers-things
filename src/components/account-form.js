@@ -1,10 +1,7 @@
 import {React,useState,useEffect} from 'react';
 import {
-  BrowserRouter as Router,
   Route,
-  Link,
-  Switch,
-  useLocation
+  Link
 } from 'react-router-dom';
 import {tryAccess} from '../api'
 

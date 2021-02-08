@@ -4,6 +4,7 @@ header {
 
 main {
   text-align: center;
+  width: 100%
 }
 
 #root {
@@ -25,13 +26,18 @@ main {
   margin: 5px;
 }
 
-#nav-link {
-  padding: 10px;
-}
-
 #posts-container {
   width: 65%;
   margin: auto;
+}
+
+#send-message-form {
+  background-color: #DCDCDC;
+  padding: 15px;
+}
+
+.nav-link {
+  margin: 10px;
 }
 
 .listed-post {
@@ -59,4 +65,9 @@ main {
 
 .delete-button {
   float: right;
+}
+
+.clearfix {
+  clear: both;
+  font-size: 1px;
 }
